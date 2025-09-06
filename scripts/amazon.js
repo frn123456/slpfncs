@@ -1,34 +1,5 @@
 import { products } from "../data/products.js";
-
-/* const products = [
-  {
-    image: "images/products/athletic-cotton-socks-6-pairs.jpg",
-    name: " Black and Gray Athletic Cotton Socks - 6 Pairs",
-    rating: {
-      stars: 4.5,
-      count: 87,
-    },
-    priceCents: 1090,
-  },
-  {
-    image: "images/products/intermediate-composite-basketball.jpg",
-    name: "Intermediate Size Basketball",
-    rating: {
-      stars: 4,
-      count: 127,
-    },
-    priceCents: 2095,
-  },
-  {
-    image: "images/products/adults-plain-cotton-tshirt-2-pack-teal.jpg",
-    name: "Adults Plain Cotton T-Shirt - 2 Pack",
-    rating: {
-      stars: 4.5,
-      count: 56,
-    },
-    priceCents: 799,
-  },
-]; */
+import { cart } from "../data/cart.js";
 
 function renderProducts(products) {
   const fragment = document.createDocumentFragment();
@@ -54,7 +25,7 @@ function renderProducts(products) {
            </div>
 
           <div class="product-price">
-            $${product.priceCents / 100}
+            $${(product.priceCents / 100).toFixed(2)}
           </div>
 
           <div class="product-quantity-container">
@@ -79,7 +50,7 @@ function renderProducts(products) {
             Added
           </div>
 
-          <button class="add-to-cart-button button-primary">
+          <button class="add-to-cart-button button-primary" data-product-name="${product.name}" data-product-image="${product.image}" data-product-price="${product.priceCents}" data-product-id="${product.id}">
             Add to Cart
           </button>
         </div>`;
@@ -91,3 +62,54 @@ function renderProducts(products) {
 
 renderProducts(products);
 
+function cartQuantity() {
+  const cartLength = JSON.parse(localStorage.getItem("cartLength")) || "0";
+  document.querySelector(".cart-quantity").textContent = cartLength;
+}
+
+cartQuantity();
+
+document.querySelectorAll(".product-container").forEach((product) => {
+  const select = product.querySelector(".product-quantity-container select");
+  const button = product.querySelector(".add-to-cart-button");
+
+  button.addEventListener("click", () => {
+    const productId = button.dataset.productId;
+    const productName = button.dataset.productName;
+    const productImage = button.dataset.productImage;
+    const productPrice = button.dataset.productPrice;
+    const quantity = Number(select.value); // read quantity directly from THIS product's select
+    const cartLength = cart.length;
+
+
+    let mactchingItem;
+
+    cart.forEach((item) => {
+      if (item.id === productId) {
+        mactchingItem = item;
+      }
+    });
+
+    if (mactchingItem) {
+      mactchingItem.quantity += 1;
+    }else {
+      cart.push({ 
+      id: productId,
+      name: productName,
+      image: productImage,
+      price: productPrice,
+      quantity: quantity,
+    });
+    }
+
+   // Save updated cart to localStorage
+    localStorage.setItem("cartItems", JSON.stringify(cart));
+
+    // Update cart quantity
+    localStorage.setItem("cartLength", JSON.stringify(cartLength + 1));
+
+    cartQuantity();
+
+    console.log(cart);
+  });
+});
