@@ -1,6 +1,16 @@
 import { products } from "../data/products.js";
 import { cart } from "../data/cart.js";
 
+function numberOfItemsAddedToCart() {
+  const numberOfItems = JSON.parse(localStorage.getItem("cartItems")) || {
+    totalQuantity: 0,
+  };
+  document.querySelector(".cart-quantity").textContent =
+    numberOfItems.totalQuantity;
+}
+
+numberOfItemsAddedToCart();
+
 function renderProducts(products) {
   const fragment = document.createDocumentFragment();
   products.forEach((product, index) => {
@@ -62,13 +72,6 @@ function renderProducts(products) {
 
 renderProducts(products);
 
-function cartQuantity() {
-  const cartLength = JSON.parse(localStorage.getItem("cartLength")) || "0";
-  document.querySelector(".cart-quantity").textContent = cartLength;
-}
-
-cartQuantity();
-
 document.querySelectorAll(".product-container").forEach((product) => {
   const select = product.querySelector(".product-quantity-container select");
   const button = product.querySelector(".add-to-cart-button");
@@ -79,37 +82,36 @@ document.querySelectorAll(".product-container").forEach((product) => {
     const productImage = button.dataset.productImage;
     const productPrice = button.dataset.productPrice;
     const quantity = Number(select.value); // read quantity directly from THIS product's select
-    const cartLength = cart.length;
-
+    console.log(quantity);
 
     let mactchingItem;
 
-    cart.forEach((item) => {
+    cart.items.forEach((item) => {
       if (item.id === productId) {
         mactchingItem = item;
       }
     });
 
     if (mactchingItem) {
-      mactchingItem.quantity += 1;
-    }else {
-      cart.push({ 
-      id: productId,
-      name: productName,
-      image: productImage,
-      price: productPrice,
-      quantity: quantity,
-    });
+      mactchingItem.quantity += quantity;
+    } else {
+      cart.items.push({
+        id: productId,
+        name: productName,
+        image: productImage,
+        price: productPrice,
+        quantity: quantity,
+      });
     }
 
-   // Save updated cart to localStorage
+    cart.totalQuantity = cart.items.reduce(
+      (sum, item) => sum + item.quantity,
+      0
+    );
+
+    // Save updated cart to localStorage
     localStorage.setItem("cartItems", JSON.stringify(cart));
 
-    // Update cart quantity
-    localStorage.setItem("cartLength", JSON.stringify(cartLength + 1));
-
-    cartQuantity();
-
-    console.log(cart);
+    numberOfItemsAddedToCart();
   });
 });
