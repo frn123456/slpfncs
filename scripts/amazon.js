@@ -1,5 +1,6 @@
 import { products } from "../data/products.js";
 import { cart } from "../data/cart.js";
+import { formatCurrency } from "./utils/formatCurrency.js";
 
 function numberOfItemsAddedToCart() {
   const numberOfItems = JSON.parse(localStorage.getItem("cartItems")) || {
@@ -35,7 +36,7 @@ function renderProducts(products) {
            </div>
 
           <div class="product-price">
-            $${(product.priceCents / 100).toFixed(2)}
+            $${formatCurrency(-1, product.priceCents)}
           </div>
 
           <div class="product-quantity-container">
@@ -75,32 +76,26 @@ renderProducts(products);
 document.querySelectorAll(".product-container").forEach((product) => {
   const select = product.querySelector(".product-quantity-container select");
   const button = product.querySelector(".add-to-cart-button");
+  const addedToCart = product.querySelector(".added-to-cart");
 
   button.addEventListener("click", () => {
     const productId = button.dataset.productId;
     const productName = button.dataset.productName;
     const productImage = button.dataset.productImage;
     const productPrice = button.dataset.productPrice;
-    const quantity = Number(select.value); // read quantity directly from THIS product's select
-    console.log(quantity);
+    const productQuantity = Number(select.value); // read quantity directly from THIS product's select
 
-    let mactchingItem;
+    const matchingItem = cart.items.find((item) => item.id === productId);
 
-    cart.items.forEach((item) => {
-      if (item.id === productId) {
-        mactchingItem = item;
-      }
-    });
-
-    if (mactchingItem) {
-      mactchingItem.quantity += quantity;
+    if (matchingItem) {
+      matchingItem.quantity += productQuantity;
     } else {
       cart.items.push({
         id: productId,
         name: productName,
         image: productImage,
         price: productPrice,
-        quantity: quantity,
+        quantity: productQuantity,
       });
     }
 
@@ -108,6 +103,15 @@ document.querySelectorAll(".product-container").forEach((product) => {
       (sum, item) => sum + item.quantity,
       0
     );
+
+    let timeoutId;
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      if (addedToCart.classList.contains("added-to-cart-visible")) {
+        addedToCart.classList.remove("added-to-cart-visible");
+      }
+    }, 2000);
+    addedToCart.classList.add("added-to-cart-visible");
 
     // Save updated cart to localStorage
     localStorage.setItem("cartItems", JSON.stringify(cart));
