@@ -2,6 +2,11 @@ import { deleteProduct } from "./deleteProduct.js";
 import { updateProduct } from "./updateProduct.js";
 
 export function renderAddedToCartItems(cart) {
+  function daysFromNow(numDays) {
+    const dayjs = window.dayjs; // use the global provided by the CDN script
+
+    return dayjs().add(numDays, "day").format("dddd, MMMM D YYYY");
+  }
   const fragment = document.createDocumentFragment();
   if (cart.items.length === 0) {
     document.querySelector(".checkout-grid .order-summary").textContent =
@@ -96,6 +101,20 @@ export function renderAddedToCartItems(cart) {
   });
 
   document.querySelector(".checkout-grid .order-summary").appendChild(fragment);
+
+  document.querySelectorAll(".cart-item-container").forEach((container) => {
+    container
+      .querySelectorAll(".delivery-option-date")
+      .forEach((dateElement, index) => {
+        if (index === 0) {
+          dateElement.textContent = daysFromNow(7);
+        } else if (index === 1) {
+          dateElement.textContent = daysFromNow(5);
+        } else if (index === 2) {
+          dateElement.textContent = daysFromNow(3);
+        }
+      });
+  });
 
   deleteProduct(cart);
   updateProduct(cart);
