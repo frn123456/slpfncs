@@ -5,7 +5,7 @@ export function renderAddedToCartItems(cart) {
   function daysFromNow(numDays) {
     const dayjs = window.dayjs; // use the global provided by the CDN script
 
-    return dayjs().add(numDays, "day").format("dddd, MMMM D YYYY");
+    return dayjs().add(numDays, "day").format("dddd, MMMM D, YYYY");
   }
   const fragment = document.createDocumentFragment();
   if (cart.items.length === 0) {
