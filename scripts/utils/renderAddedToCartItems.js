@@ -1,12 +1,12 @@
 import { deleteProduct } from "./deleteProduct.js";
 import { updateProduct } from "./updateProduct.js";
+import dayjs from "https://cdn.jsdelivr.net/npm/dayjs@1.11.18/+esm";
 
 export function renderAddedToCartItems(cart) {
   function daysFromNow(numDays) {
-    const dayjs = window.dayjs; // use the global provided by the CDN script
-
     return dayjs().add(numDays, "day").format("dddd, MMMM D, YYYY");
   }
+
   const fragment = document.createDocumentFragment();
   if (cart.items.length === 0) {
     document.querySelector(".checkout-grid .order-summary").textContent =
