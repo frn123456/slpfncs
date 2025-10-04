@@ -18,7 +18,7 @@ export function renderAddedToCartItems(cart) {
     template.innerHTML = `
       <div class="cart-item-container" data-product-id="${cartItem.id}">
             <div class="delivery-date">
-              Delivery date: Tuesday, June 21
+              Delivery date: 
             </div>
 
             <div class="cart-item-details-grid">
@@ -54,7 +54,7 @@ export function renderAddedToCartItems(cart) {
                   Choose a delivery option:
                 </div>
                 <div class="delivery-option">
-                  <input type="radio" checked
+                  <input type="radio" 
                     class="delivery-option-input"
                     name=${deliveryOptionName}>
                   <div>

@@ -14,52 +14,30 @@ console.log(cart);
 getItemCount();
 
 renderAddedToCartItems(cart);
-calculateCartInitialPrice(cart);
-calculateShippingPrice();
+
+function recalcAll() {
+  const initial = calculateCartInitialPrice(cart);
+  const shipping = calculateShippingPrice();
+  const subtotal = calculateSubTotal(initial, shipping);
+  const taxAmount = calculateTax(subtotal);
+  const total = calculateTotalWithTax(subtotal, taxAmount);
+  return { initial, shipping, subtotal, taxAmount, total };
+}
+
+// initial calculation
+recalcAll();
+
 getDeliveryDate();
-calculateSubTotal(calculateCartInitialPrice(cart), calculateShippingPrice());
-calculateTax(
-  calculateSubTotal(calculateCartInitialPrice(cart), calculateShippingPrice())
-);
-calculateTotalWithTax(
-  calculateSubTotal(calculateCartInitialPrice(cart), calculateShippingPrice()),
-  calculateTax(
-    calculateSubTotal(calculateCartInitialPrice(cart), calculateShippingPrice())
-  )
-);
 
 // Also re-run whenever a shipping option changes
 document.querySelectorAll(".delivery-option-input").forEach((input) => {
   input.addEventListener("change", () => {
-    calculateShippingPrice();
-    getDeliveryDate();
-    calculateCartInitialPrice(cart);
-    calculateSubTotal(
-      calculateCartInitialPrice(cart),
-      calculateShippingPrice()
-    );
-    calculateTax(
-      calculateSubTotal(
-        calculateCartInitialPrice(cart),
-        calculateShippingPrice()
-      )
-    );
-    calculateTotalWithTax(
-      calculateSubTotal(
-        calculateCartInitialPrice(cart),
-        calculateShippingPrice()
-      ),
-      calculateTax(
-        calculateSubTotal(
-          calculateCartInitialPrice(cart),
-          calculateShippingPrice()
-        )
-      )
-    );
+    recalcAll();
   });
 });
 
 document.querySelector(".place-order-button").addEventListener("click", () => {
+  const vals = recalcAll();
   const order = {
     orders: {
       date: new Date().toLocaleDateString("en-US", {
@@ -70,18 +48,7 @@ document.querySelector(".place-order-button").addEventListener("click", () => {
       items: [...cart.items],
       totalQuantity: cart.totalQuantity,
       deliveryDate: getAllDeliveryDates(),
-      totalWithTax: calculateTotalWithTax(
-        calculateSubTotal(
-          calculateCartInitialPrice(cart),
-          calculateShippingPrice()
-        ),
-        calculateTax(
-          calculateSubTotal(
-            calculateCartInitialPrice(cart),
-            calculateShippingPrice()
-          )
-        )
-      ),
+      totalWithTax: vals.total,
     },
   };
 

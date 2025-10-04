@@ -1,17 +1,23 @@
 export function getDeliveryDate() {
-  const cartItems = document.querySelectorAll(".cart-item-container");
-
-  cartItems.forEach((cartItem) => {
-    // Find the selected delivery option inside this product
-    const selectedOption = cartItem.querySelector(
-      ".delivery-option-input:checked"
-    );
-
-    const deliveryDate = selectedOption
-      .closest(".delivery-option")
-      .querySelector(".delivery-option-date");
-
-    cartItem.querySelector(".delivery-date").textContent =
-      `Delivery Date: ${deliveryDate.textContent}`;
-  });
+  document
+    .querySelectorAll(".cart-item-container")
+    .forEach((cartItemContainer) => {
+      const radios = cartItemContainer.querySelectorAll(
+        ".delivery-option-input"
+      );
+      radios.forEach((radio) => {
+        // ensure none are checked by default
+        radio.checked = false;
+        radio.addEventListener("change", () => {
+          const deliveryDateEl = radio
+            .closest(".delivery-option")
+            ?.querySelector(".delivery-option-date");
+          if (deliveryDateEl) {
+            const dd = cartItemContainer.querySelector(".delivery-date");
+            if (dd)
+              dd.textContent = `Delivery Date: ${deliveryDateEl.textContent.trim()}`;
+          }
+        });
+      });
+    });
 }
