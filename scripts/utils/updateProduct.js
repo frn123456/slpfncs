@@ -21,30 +21,12 @@ export function updateProduct(params) {
       );
       localStorage.setItem("cartItems", JSON.stringify(params));
       getItemCount();
-      calculateCartInitialPrice(params);
-      calculateShippingPrice();
-      calculateSubTotal(
-        calculateCartInitialPrice(params),
-        calculateShippingPrice()
-      );
-      calculateTax(
-        calculateSubTotal(
-          calculateCartInitialPrice(params),
-          calculateShippingPrice()
-        )
-      );
-      calculateTotalWithTax(
-        calculateSubTotal(
-          calculateCartInitialPrice(params),
-          calculateShippingPrice()
-        ),
-        calculateTax(
-          calculateSubTotal(
-            calculateCartInitialPrice(params),
-            calculateShippingPrice()
-          )
-        )
-      );
+      const initial = calculateCartInitialPrice(params);
+      const shipping = calculateShippingPrice();
+      const subtotal = calculateSubTotal(initial, shipping);
+      const taxAmount = calculateTax(subtotal);
+      const total = calculateTotalWithTax(subtotal, taxAmount);
+      console.log(initial, shipping, subtotal, taxAmount, total);
     }
 
     updateLink.addEventListener("click", () => {

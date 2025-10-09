@@ -18,82 +18,26 @@ export function deleteProduct(params) {
       const cartIndex = params.items.findIndex((item) => item.id === productId);
       console.log(cartIndex);
 
-      if (quantity > 1) {
-        // Decrement
-        params.items[cartIndex].quantity--;
-        params.totalQuantity = params.items.reduce(
-          (sum, item) => sum + item.quantity,
-          0
-        );
+      // Remove
+      params.items.splice(cartIndex, 1);
 
-        quantityLabel.textContent = params.items[cartIndex].quantity;
+      params.totalQuantity = params.items.reduce(
+        (sum, item) => sum + item.quantity,
+        0
+      );
 
-        localStorage.setItem("cartItems", JSON.stringify(params));
+      closestCartItemContainer.remove();
 
-        getItemCount();
-        calculateCartInitialPrice(params);
-        calculateShippingPrice();
-        calculateSubTotal(
-          calculateCartInitialPrice(params),
-          calculateShippingPrice()
-        );
-        calculateTax(
-          calculateSubTotal(
-            calculateCartInitialPrice(params),
-            calculateShippingPrice()
-          )
-        );
-        calculateTotalWithTax(
-          calculateSubTotal(
-            calculateCartInitialPrice(params),
-            calculateShippingPrice()
-          ),
-          calculateTax(
-            calculateSubTotal(
-              calculateCartInitialPrice(params),
-              calculateShippingPrice()
-            )
-          )
-        );
-      } else {
-        // Remove
-        params.items.splice(cartIndex, 1);
+      localStorage.setItem("cartItems", JSON.stringify(params));
 
-        params.totalQuantity = params.items.reduce(
-          (sum, item) => sum + item.quantity,
-          0
-        );
+      getItemCount();
 
-        closestCartItemContainer.remove();
-
-        localStorage.setItem("cartItems", JSON.stringify(params));
-
-        getItemCount();
-        calculateCartInitialPrice(params);
-        calculateShippingPrice();
-        calculateSubTotal(
-          calculateCartInitialPrice(params),
-          calculateShippingPrice()
-        );
-        calculateTax(
-          calculateSubTotal(
-            calculateCartInitialPrice(params),
-            calculateShippingPrice()
-          )
-        );
-        calculateTotalWithTax(
-          calculateSubTotal(
-            calculateCartInitialPrice(params),
-            calculateShippingPrice()
-          ),
-          calculateTax(
-            calculateSubTotal(
-              calculateCartInitialPrice(params),
-              calculateShippingPrice()
-            )
-          )
-        );
-      }
+      const initial = calculateCartInitialPrice(params);
+      const shipping = calculateShippingPrice();
+      const subtotal = calculateSubTotal(initial, shipping);
+      const taxAmount = calculateTax(subtotal);
+      const total = calculateTotalWithTax(subtotal, taxAmount);
+      console.log(initial, shipping, subtotal, taxAmount, total);
     });
   });
 }
